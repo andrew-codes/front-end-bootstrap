@@ -1,25 +1,32 @@
 {
-    "name": "application-name",
-    "version": "0.0.0",
-    "private": true,
-    "devDependencies": {
-        "karma-chrome-launcher": "~0.1.3",
-        "karma-firefox-launcher": "~0.1.3",
-        "karma-safari-launcher": "~0.1.1",
-        "karma-mocha": "~0.1.3",
-        "chai": "~1.9.1",
-        "gulp": "~3.6.2",
-        "bower": "~1.3.2",
-        "karma": "~0.12.10",
-        "karma-phantomjs-launcher": "~0.1.4",
-        "karma-ng-scenario": "~0.1.0",
-        "karma-jasmine": "~0.1.5",
-        "http-server": "~0.6.1"
-    },
-    "scripts": {
-        "start": "http-server -p 9999",
-        "test": "node_modules/karma/bin/karma start tests/karma-unit.config.js",
-        "test-single-run": "node_modules/karma/bin/karma start tests/karma-unit.config.js --single-run=true",
-        "test-e2e": "node_modules/karma/bin/karma start tests/karma-e2s.config.js"
-    }
+  "name": "application-name",
+  "version": "0.0.0",
+  "private": true,
+  "devDependencies": {
+    "karma-chrome-launcher": "~0.1.3",
+    "karma-firefox-launcher": "~0.1.3",
+    "karma-safari-launcher": "~0.1.1",
+    "karma-mocha": "~0.1.3",
+    "chai": "~1.9.1",
+    "gulp": "~3.6.2",
+    "bower": "~1.3.2",
+    "karma": "~0.12.10",
+    "karma-phantomjs-launcher": "~0.1.4",
+    "karma-ng-scenario": "~0.1.0",
+    "karma-jasmine": "~0.1.5",
+    "http-server": "~0.6.1",
+    "gulp-stylus": "~1.0.0",
+    "gulp-minify-css": "~0.3.1",
+    "event-stream": "~3.1.2",
+    "gulp-concat": "~2.2.0",
+    "gulp-uglify": "~0.2.1",
+    "gulp-inject": "~0.4.1",
+    "connect": "~2.14.5"
+  },
+  "scripts": {
+    "start": "node_modules/.bin/gulp start",
+    "test": "node_modules/karma/bin/karma start tests/karma-unit.config.js",
+    "test-single-run": "node_modules/karma/bin/karma start tests/karma-unit.config.js --single-run=true",
+    "test-e2e": "node_modules/karma/bin/karma start tests/karma-e2s.config.js"
+  }
 }
