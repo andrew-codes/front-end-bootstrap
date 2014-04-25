@@ -47,7 +47,9 @@ gulp.task('build', ['build.styles', 'build.scripts', 'build.resources'], functio
 });
 
 gulp.task('build.styles', [], function () {
-    return buildStylusCss([paths.styles.input])
+    var thirdPartyStyles = buildThirdPartyStyles(bowerFile.dependencies);
+    var appStyles = buildStylusCss([paths.styles.input]);
+    return es.merge(thirdPartyStyles, appStyles)
         .pipe(minifyCss())
         .pipe(gulp.dest(paths.styles.output));
 });
@@ -70,8 +72,13 @@ function buildStylusCss(inputPaths) {
         .pipe(stylus());
 }
 
+function buildThirdPartyStyles(bowerDependencies) {
+    return gulp.src(getBowerDependencies(bowerDependencies, {css: true}))
+        .pipe(concat('vendor.css'));
+}
+
 function buildThirdPartyScripts(bowerDependencies) {
-    return gulp.src(getBowerDependencies(bowerDependencies))
+    return gulp.src(getBowerDependencies(bowerDependencies, {scripts: true}))
         .pipe(concat('vendor.js'));
 }
 
@@ -85,34 +92,37 @@ function adjustBowerScriptPath(dependencyName, scriptPath) {
     return paths.bowerComponentsPath + '/' + dependencyName + '/' + scriptPath;
 }
 
-function getBowerMainJsFiles(dependencyName, main) {
-    var scripts = [];
-    if (typeof main === 'Array') {
-        main.forEach(function (script) {
-            if (isJsFile(script)) {
-                scripts.push(adjustBowerScriptPath(dependencyName, script));
+function getBowerMain(dependencyName, main, options) {
+    var filePaths = [];
+    if (Object.prototype.toString.call(main) === '[object Array]') {
+        main.forEach(function (filePath) {
+            if (filePathIsAMatch(filePath, options)) {
+                filePaths.push(adjustBowerScriptPath(dependencyName, filePath));
             }
         });
     }
-    else if (isJsFile(main)) {
-        scripts.push(adjustBowerScriptPath(dependencyName, main));
+    else if (filePathIsAMatch(main, options)) {
+        filePaths.push(adjustBowerScriptPath(dependencyName, main));
     }
-    return scripts;
+    return filePaths;
 }
 
-function isJsFile(filePath) {
+function filePathIsAMatch(filePath, options) {
     var suffix = '.js';
+    if (options.css){
+        suffix = '.css';
+    }
     return filePath.indexOf(suffix, filePath.length - suffix.length) !== -1;
 }
 
-function getBowerDependencies(dependencies) {
-    var scripts = [];
+function getBowerDependencies(dependencies, options) {
+    var filePaths = [];
     if (dependencies == null) {
-        return scripts;
+        return filePaths;
     }
     Object.keys(dependencies).forEach(function (dependencyName) {
         var dependencyBowerFile = require(paths.bowerComponentsPath + '/' + dependencyName + '/bower.json');
-        scripts = scripts.concat(getBowerDependencies(dependencyBowerFile.dependencies), getBowerMainJsFiles(dependencyName, dependencyBowerFile.main));
+        filePaths = filePaths.concat(getBowerDependencies(dependencyBowerFile.dependencies, options), getBowerMain(dependencyName, dependencyBowerFile.main, options));
     });
-    return scripts;
+    return filePaths;
 }
