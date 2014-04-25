@@ -71,13 +71,7 @@ function buildStylusCss(inputPaths) {
 }
 
 function buildThirdPartyScripts(bowerDependencies) {
-    var scripts = [];
-    Object.keys(bowerDependencies).forEach(function (key) {
-        var dependencyBowerFile = require(paths.bowerComponentsPath + '/' + key + '/bower.json');
-        var main = dependencyBowerFile.main;
-        scripts = scripts.concat(getBowerMainJsFiles(key, main));
-    });
-    return gulp.src(scripts)
+    return gulp.src(getBowerDependencies(bowerDependencies))
         .pipe(concat('vendor.js'));
 }
 
@@ -109,4 +103,16 @@ function getBowerMainJsFiles(dependencyName, main) {
 function isJsFile(filePath) {
     var suffix = '.js';
     return filePath.indexOf(suffix, filePath.length - suffix.length) !== -1;
+}
+
+function getBowerDependencies(dependencies) {
+    var scripts = [];
+    if (dependencies == null) {
+        return scripts;
+    }
+    Object.keys(dependencies).forEach(function (dependencyName) {
+        var dependencyBowerFile = require(paths.bowerComponentsPath + '/' + dependencyName + '/bower.json');
+        scripts = scripts.concat(getBowerDependencies(dependencyBowerFile.dependencies), getBowerMainJsFiles(dependencyName, dependencyBowerFile.main));
+    });
+    return scripts;
 }
